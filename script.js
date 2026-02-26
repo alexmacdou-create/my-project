@@ -4,21 +4,19 @@ const output = document.getElementById("output");
 const input = document.getElementById("mobileInput");
 const terminal = document.getElementById("terminal");
 
-/* ---------------- Boot Text ---------------- */
+/* ---------------- Boot Sequence ---------------- */
 
-function typeText(text, delay = 30) {
+function typeText(text, delay = 20) {
   return new Promise(resolve => {
     let i = 0;
     output.textContent = "";
 
     function typing() {
       if (i < text.length) {
-        output.textContent += text.charAt(i);
+        output.textContent += text[i];
         i++;
         setTimeout(typing, delay);
-      } else {
-        resolve();
-      }
+      } else resolve();
     }
 
     typing();
@@ -27,42 +25,41 @@ function typeText(text, delay = 30) {
 
 async function bootSequence() {
   await typeText("Initializing archive...\n");
-  await new Promise(r => setTimeout(r, 500));
+  await new Promise(r => setTimeout(r, 400));
 
   await typeText("Loading academic modules...\n");
-  await new Promise(r => setTimeout(r, 500));
-
-  await typeText("Authenticating user...\n");
-  await new Promise(r => setTimeout(r, 700));
+  await new Promise(r => setTimeout(r, 400));
 
   await typeText("Access granted.\n\n");
-  await new Promise(r => setTimeout(r, 800));
 
-  showMenu();
+  showPrompt();
 }
 
-/* ---------------- Menu ---------------- */
+/* ---------------- Terminal Navigation ---------------- */
 
-function showMenu() {
+function showPrompt() {
   output.innerHTML = `
 WELCOME TO MY PORTFOLIO
 -----------------------
-Type H = History Paper
-Type P = Philosophy Paper
-Type L = Literature Paper
+Type commands below:
 
-Tap screen to type commands
-<span class="cursor"></span>
+H = History Paper
+P = Philosophy Paper
+L = Literature Paper
+
+Type command + ENTER
 `;
 }
+
+/* Paper Loading */
 
 function loadHistory() {
   output.textContent = `
 HISTORY PAPER
 -------------
-[THE ACID ASPECT: PSYCHEDELIC DRUGS AND COUNTERCULTURE IN THE SIXTIES]
+[THE ACID ASPECT]
 
-Press ESC to return
+Press ESC or type MENU
 `;
 }
 
@@ -70,9 +67,9 @@ function loadPhilosophy() {
   output.textContent = `
 PHILOSOPHY PAPER
 ----------------
-[Paste philosophy essay here]
+Paper content here
 
-Press ESC to return
+Press ESC or type MENU
 `;
 }
 
@@ -80,40 +77,44 @@ function loadLiterature() {
   output.textContent = `
 LITERATURE PAPER
 ----------------
-[Paste literature essay here]
+Paper content here
 
-Press ESC to return
+Press ESC or type MENU
 `;
 }
 
-/* ---------------- Command Handling ---------------- */
+/* ---------------- Command Parser ---------------- */
 
-function handleCommand(key) {
-  if (!key) return;
+function processCommand(cmd) {
 
-  key = key.toLowerCase();
+  if (!cmd) return;
 
-  if (key === "h") loadHistory();
-  if (key === "p") loadPhilosophy();
-  if (key === "l") loadLiterature();
-  if (key === "escape") showMenu();
+  cmd = cmd.toLowerCase().trim();
+
+  if (cmd === "h") loadHistory();
+  if (cmd === "p") loadPhilosophy();
+  if (cmd === "l") loadLiterature();
+  if (cmd === "menu") showPrompt();
+
 }
 
-/* Desktop keyboard */
-document.addEventListener("keydown", (event) => {
-  event.preventDefault();
-  handleCommand(event.key);
-});
+/* ---------------- Input Handling (THIS IS THE KEY FIX) ---------------- */
 
-/* Mobile keyboard */
-input.addEventListener("input", (event) => {
-  let value = event.target.value;
-  if (!value) return;
+input.addEventListener("keydown", (event) => {
 
-  let lastChar = value.slice(-1);
-  handleCommand(lastChar);
+  if (event.key === "Enter") {
 
-  input.value = "";
+    event.preventDefault();
+
+    processCommand(input.value);
+
+    input.value = "";
+  }
+
+  if (event.key === "Escape") {
+    showPrompt();
+  }
+
 });
 
 /* ---------------- Focus Handling ---------------- */
@@ -121,7 +122,7 @@ input.addEventListener("input", (event) => {
 terminal.addEventListener("click", () => input.focus());
 terminal.addEventListener("touchstart", () => input.focus());
 
-/* ---------------- Start ---------------- */
+/* Start */
 
 bootSequence();
 input.focus();
