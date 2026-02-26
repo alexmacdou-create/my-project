@@ -4,62 +4,64 @@ const output = document.getElementById("output");
 const input = document.getElementById("mobileInput");
 const terminal = document.getElementById("terminal");
 
-/* ---------------- Boot Sequence ---------------- */
+/* ---------------- Typing Animation ---------------- */
 
 function typeText(text, delay = 20) {
   return new Promise(resolve => {
+
     let i = 0;
     output.textContent = "";
 
-    function typing() {
+    function type() {
       if (i < text.length) {
         output.textContent += text[i];
         i++;
-        setTimeout(typing, delay);
+        setTimeout(type, delay);
       } else resolve();
     }
 
-    typing();
+    type();
+
   });
 }
 
+/* ---------------- Pages ---------------- */
+
 async function bootSequence() {
-  await typeText("Initializing archive...\n");
-  await new Promise(r => setTimeout(r, 400));
 
-  await typeText("Loading academic modules...\n");
-  await new Promise(r => setTimeout(r, 400));
+  await typeText("Initializing portfolio system...\n");
+  await new Promise(r => setTimeout(r, 600));
 
-  await typeText("Access granted.\n\n");
+  await typeText("Loading academic archives...\n");
+  await new Promise(r => setTimeout(r, 600));
 
-  showPrompt();
+  await typeText("System ready.\n\n");
+
+  showHelp();
 }
 
-/* ---------------- Terminal Navigation ---------------- */
+function showHelp() {
 
-function showPrompt() {
   output.innerHTML = `
-WELCOME TO MY PORTFOLIO
------------------------
-Type commands below:
+PORTFOLIO TERMINAL
+------------------
+Commands:
 
-H = History Paper
-P = Philosophy Paper
-L = Literature Paper
-
-Type command + ENTER
+HISTORY
+PHILOSOPHY
+LITERATURE
+HELP
 `;
 }
-
-/* Paper Loading */
 
 function loadHistory() {
   output.textContent = `
 HISTORY PAPER
 -------------
-[THE ACID ASPECT]
 
-Press ESC or type MENU
+[Your history essay here]
+
+Type HELP to return
 `;
 }
 
@@ -67,9 +69,10 @@ function loadPhilosophy() {
   output.textContent = `
 PHILOSOPHY PAPER
 ----------------
-Paper content here
 
-Press ESC or type MENU
+[Your philosophy essay here]
+
+Type HELP to return
 `;
 }
 
@@ -77,57 +80,55 @@ function loadLiterature() {
   output.textContent = `
 LITERATURE PAPER
 ----------------
-Paper content here
 
-Press ESC or type MENU
+[Your literature essay here]
+
+Type HELP to return
 `;
 }
 
-/* ---------------- Command Parser ---------------- */
+/* ---------------- Command Engine ---------------- */
 
-function processCommand(cmd) {
+function runCommand(cmd) {
 
   if (!cmd) return;
 
   cmd = cmd.toLowerCase().trim();
 
-  if (cmd === "h") loadHistory();
-  if (cmd === "p") loadPhilosophy();
-  if (cmd === "l") loadLiterature();
-  if (cmd === "menu") showPrompt();
+  if (cmd === "history") loadHistory();
+  if (cmd === "philosophy") loadPhilosophy();
+  if (cmd === "literature") loadLiterature();
+  if (cmd === "help") showHelp();
 
 }
 
-/* ---------------- Input Handling (THIS IS THE KEY FIX) ---------------- */
+/* Input Handling */
 
-input.addEventListener("keydown", (event) => {
+input.addEventListener("keydown", e => {
 
-  if (event.key === "Enter") {
+  if (e.key === "Enter") {
+    e.preventDefault();
 
-    event.preventDefault();
-
-    processCommand(input.value);
+    runCommand(input.value);
 
     input.value = "";
   }
 
-  if (event.key === "Escape") {
-    showPrompt();
-  }
-
 });
 
-/* ---------------- Focus Handling ---------------- */
+/* Prevent mobile page scrolling */
+document.body.addEventListener("touchmove", e => {
+  e.preventDefault();
+}, { passive:false });
 
 terminal.addEventListener("click", () => input.focus());
 terminal.addEventListener("touchstart", () => input.focus());
-
-/* Start */
 
 bootSequence();
 input.focus();
 
 });
+
 
 
 
