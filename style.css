@@ -23,12 +23,15 @@ body {
 #output {
   white-space: pre-wrap;
   word-wrap: break-word;
+
 }
 
 #mobileInput {
-  position: absolute;
-  opacity: 0;
-  height: 0;
-  width: 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  opacity: 0.01;   /* NOT 0 */
+  height: 1px;     /* NOT 0 */
+  width: 1px;      /* NOT 0 */
   border: none;
 }
