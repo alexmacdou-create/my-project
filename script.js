@@ -1,3 +1,5 @@
+document.addEventListener("DOMContentLoaded", () => {
+
 const output = document.getElementById("output");
 const input = document.getElementById("mobileInput");
 
@@ -50,7 +52,8 @@ Press ESC to return here
 }
 
 function loadHistory() {
-  output.textContent = `HISTORY PAPER
+  output.textContent = `
+HISTORY PAPER
 -------------
 [THE ACID ASPECT: PSYCHEDELIC DRUGS AND COUNTERCULTURE IN THE SIXTIES]
 
@@ -68,16 +71,10 @@ Press ESC to return
 `;
 }
 
-/* -----------------------------
-   Keyboard + Mobile Input Logic
------------------------------ */
-
-// Force keyboard open on mobile taps
 document.getElementById("terminal").addEventListener("touchstart", () => {
   input.focus();
 });
 
-// Terminal-style command handling
 function handleCommand(key) {
   if (key === "h") loadHistory();
   if (key === "p") loadPhilosophy();
@@ -97,18 +94,15 @@ Press ESC to return
   }
 }
 
-/* Desktop keyboard support */
 document.addEventListener("keydown", function(event) {
   handleCommand(event.key.toLowerCase());
 });
 
-/* Mobile virtual keyboard support */
 input.addEventListener("keyup", function(event) {
   handleCommand(event.key.toLowerCase());
   input.value = "";
 });
 
-/* Start sequence */
 bootSequence();
 
 function focusInput() {
@@ -117,5 +111,8 @@ function focusInput() {
 
 document.getElementById("terminal").addEventListener("click", focusInput);
 input.focus();
+
+});
+
 
 
