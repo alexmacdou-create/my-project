@@ -1,4 +1,5 @@
 const output = document.getElementById("output");
+const input = document.getElementById("mobileInput");
 
 function typeText(text, delay = 30) {
   return new Promise((resolve) => {
@@ -175,4 +176,5 @@ document.addEventListener("click", focusInput);
 document.getElementById("terminal").addEventListener("click", function () {
   input.focus();
 });
+
 
