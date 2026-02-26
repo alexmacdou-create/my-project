@@ -6,26 +6,32 @@ const terminal = document.getElementById("terminal");
 
 /* ---------------- Typing Animation ---------------- */
 
-function typeText(text, delay = 20) {
+function typeText(text, delay = 25) {
+
   return new Promise(resolve => {
 
     let i = 0;
     output.textContent = "";
 
     function type() {
+
       if (i < text.length) {
         output.textContent += text[i];
         i++;
         setTimeout(type, delay);
-      } else resolve();
+      } else {
+        resolve();
+      }
+
     }
 
     type();
 
   });
+
 }
 
-/* ---------------- Pages ---------------- */
+/* ---------------- Boot Sequence ---------------- */
 
 async function bootSequence() {
 
@@ -40,50 +46,56 @@ async function bootSequence() {
   showHelp();
 }
 
+/* ---------------- Pages ---------------- */
+
 function showHelp() {
 
   output.innerHTML = `
 PORTFOLIO TERMINAL
 ------------------
-Commands:
 
-HISTORY
-PHILOSOPHY
-LITERATURE
-HELP
+Available Commands:
+
+history
+philosophy
+literature
+help
 `;
 }
 
 function loadHistory() {
+
   output.textContent = `
 HISTORY PAPER
 -------------
 
-[Your history essay here]
+[Insert history essay here]
 
-Type HELP to return
+Type help to return
 `;
 }
 
 function loadPhilosophy() {
+
   output.textContent = `
 PHILOSOPHY PAPER
 ----------------
 
-[Your philosophy essay here]
+[Insert philosophy essay here]
 
-Type HELP to return
+Type help to return
 `;
 }
 
 function loadLiterature() {
+
   output.textContent = `
 LITERATURE PAPER
 ----------------
 
-[Your literature essay here]
+[Insert literature essay here]
 
-Type HELP to return
+Type help to return
 `;
 }
 
@@ -96,27 +108,29 @@ function runCommand(cmd) {
   cmd = cmd.toLowerCase().trim();
 
   if (cmd === "history") loadHistory();
-  if (cmd === "philosophy") loadPhilosophy();
-  if (cmd === "literature") loadLiterature();
-  if (cmd === "help") showHelp();
+  else if (cmd === "philosophy") loadPhilosophy();
+  else if (cmd === "literature") loadLiterature();
+  else showHelp();
 
 }
 
-/* Input Handling */
+/* ---------------- Input Handling ---------------- */
 
 input.addEventListener("keydown", e => {
 
   if (e.key === "Enter") {
+
     e.preventDefault();
 
     runCommand(input.value);
 
     input.value = "";
+
   }
 
 });
 
-/* Prevent mobile page scrolling */
+/* Prevent mobile scrolling when typing */
 document.body.addEventListener("touchmove", e => {
   e.preventDefault();
 }, { passive:false });
@@ -124,6 +138,7 @@ document.body.addEventListener("touchmove", e => {
 terminal.addEventListener("click", () => input.focus());
 terminal.addEventListener("touchstart", () => input.focus());
 
+/* Start */
 bootSequence();
 input.focus();
 
