@@ -144,12 +144,22 @@ Press ESC to return
 `;
 }
 
-document.addEventListener("keydown", function (event) {
-  const key = event.key.toLowerCase();
+input.addEventListener("input", function (event) {
+  const value = input.value.toLowerCase();
 
-  if (key === "h") loadHistory();
-  if (key === "p") loadPhilosophy();
-  if (key === "escape") showMenu();
+  if (value === "h") loadHistory();
+  if (value === "p") loadPhilosophy();
+  if (value === "l") {
+    output.textContent = `
+LITERATURE PAPER
+----------------
+[Paste literature essay here]
+
+Press ESC to return
+`;
+  }
+
+  input.value = ""; // clear after each key
 });
 
 
@@ -165,3 +175,4 @@ document.addEventListener("click", focusInput);
 document.getElementById("terminal").addEventListener("click", function () {
   input.focus();
 });
+
