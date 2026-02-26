@@ -152,6 +152,7 @@ document.addEventListener("keydown", function (event) {
   if (key === "escape") showMenu();
 });
 
+
 bootSequence();
 
 const input = document.getElementById("mobileInput");
@@ -161,4 +162,6 @@ function focusInput() {
 }
 
 document.addEventListener("click", focusInput);
-window.addEventListener("load", focusInput);
+document.getElementById("terminal").addEventListener("click", function () {
+  input.focus();
+});
