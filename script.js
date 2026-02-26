@@ -1,122 +1,130 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  const output = document.getElementById("output");
-  const input = document.getElementById("mobileInput");
+const output = document.getElementById("output");
+const input = document.getElementById("mobileInput");
+const terminal = document.getElementById("terminal");
 
-  // ---------- Boot Sequence ----------
-  function typeText(text, delay = 30) {
-    return new Promise((resolve) => {
-      let i = 0;
-      output.textContent = "";
+/* ---------------- Boot Text ---------------- */
 
-      function typing() {
-        if (i < text.length) {
-          output.textContent += text.charAt(i);
-          i++;
-          setTimeout(typing, delay);
-        } else {
-          resolve();
-        }
+function typeText(text, delay = 30) {
+  return new Promise(resolve => {
+    let i = 0;
+    output.textContent = "";
+
+    function typing() {
+      if (i < text.length) {
+        output.textContent += text.charAt(i);
+        i++;
+        setTimeout(typing, delay);
+      } else {
+        resolve();
       }
+    }
 
-      typing();
-    });
-  }
+    typing();
+  });
+}
 
-  async function bootSequence() {
-    await typeText("Initializing archive...\n");
-    await new Promise(r => setTimeout(r, 500));
+async function bootSequence() {
+  await typeText("Initializing archive...\n");
+  await new Promise(r => setTimeout(r, 500));
 
-    await typeText("Loading academic modules...\n");
-    await new Promise(r => setTimeout(r, 500));
+  await typeText("Loading academic modules...\n");
+  await new Promise(r => setTimeout(r, 500));
 
-    await typeText("Authenticating user...\n");
-    await new Promise(r => setTimeout(r, 700));
+  await typeText("Authenticating user...\n");
+  await new Promise(r => setTimeout(r, 700));
 
-    await typeText("Access granted.\n\n");
-    await new Promise(r => setTimeout(r, 800));
+  await typeText("Access granted.\n\n");
+  await new Promise(r => setTimeout(r, 800));
 
-    showMenu();
-  }
+  showMenu();
+}
 
-  // ---------- Menu & Papers ----------
-  function showMenu() {
-    output.innerHTML = `
+/* ---------------- Menu ---------------- */
+
+function showMenu() {
+  output.innerHTML = `
 WELCOME TO MY PORTFOLIO
 -----------------------
-Press H to access a History paper
-Press P to access a Philosophy paper
-Press L to access a Literature paper
+Type H = History Paper
+Type P = Philosophy Paper
+Type L = Literature Paper
 
-Press ESC to return here
+Tap screen to type commands
 <span class="cursor"></span>
 `;
-  }
+}
 
-  function loadHistory() {
-    output.textContent = `
+function loadHistory() {
+  output.textContent = `
 HISTORY PAPER
 -------------
 [THE ACID ASPECT: PSYCHEDELIC DRUGS AND COUNTERCULTURE IN THE SIXTIES]
 
 Press ESC to return
 `;
-  }
+}
 
-  function loadPhilosophy() {
-    output.textContent = `
+function loadPhilosophy() {
+  output.textContent = `
 PHILOSOPHY PAPER
 ----------------
-[Paste your philosophy essay here]
+[Paste philosophy essay here]
 
 Press ESC to return
 `;
-  }
+}
 
-  function loadLiterature() {
-    output.textContent = `
+function loadLiterature() {
+  output.textContent = `
 LITERATURE PAPER
 ----------------
 [Paste literature essay here]
 
 Press ESC to return
 `;
-  }
+}
 
-  // ---------- Keyboard Handling ----------
-  function handleCommandFromInput(value) {
-    if (!value) return;
-    value = value.toLowerCase();
+/* ---------------- Command Handling ---------------- */
 
-    if (value === "h") loadHistory();
-    if (value === "p") loadPhilosophy();
-    if (value === "l") loadLiterature();
-    if (value === "escape") showMenu();
-  }
+function handleCommand(key) {
+  if (!key) return;
 
-  // Desktop keyboard support
-  document.addEventListener("keydown", (event) => {
-    handleCommandFromInput(event.key);
-  });
+  key = key.toLowerCase();
 
-  // Mobile keyboard support
-  input.addEventListener("input", (event) => {
-    // Only take the last character typed
-    handleCommandFromInput(event.target.value.slice(-1));
-    input.value = ""; // Clear input so next key works
-  });
+  if (key === "h") loadHistory();
+  if (key === "p") loadPhilosophy();
+  if (key === "l") loadLiterature();
+  if (key === "escape") showMenu();
+}
 
-  // ---------- Input focus ----------
-  function focusInput() {
-    input.focus();
-  }
+/* Desktop keyboard */
+document.addEventListener("keydown", (event) => {
+  event.preventDefault();
+  handleCommand(event.key);
+});
 
-  document.getElementById("terminal").addEventListener("click", focusInput);
-  document.getElementById("terminal").addEventListener("touchstart", focusInput);
+/* Mobile keyboard */
+input.addEventListener("input", (event) => {
+  let value = event.target.value;
+  if (!value) return;
 
-  // ---------- Start ----------
-  bootSequence();
-  input.focus();
+  let lastChar = value.slice(-1);
+  handleCommand(lastChar);
+
+  input.value = "";
+});
+
+/* ---------------- Focus Handling ---------------- */
+
+terminal.addEventListener("click", () => input.focus());
+terminal.addEventListener("touchstart", () => input.focus());
+
+/* ---------------- Start ---------------- */
+
+bootSequence();
+input.focus();
 
 });
 
