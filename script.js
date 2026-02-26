@@ -19,7 +19,9 @@ help
 }
 
 function loadHistory() {
-output.textContent = "History Paper\n\n[TEST]\n\nType help";
+output.textContent = `TEST
+
+Type help to return`;
 }
 
 function loadPhilosophy() {
@@ -62,6 +64,7 @@ showMenu();
 input.focus();
 
 });
+
 
 
 
