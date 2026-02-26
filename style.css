@@ -2,24 +2,15 @@ body {
   background: black;
   color: #00ff00;
   font-family: monospace;
-  margin: 0;
   padding: 20px;
-}
-
-#terminal {
-  min-height: 100vh;
-  text-shadow: 0 0 5px #00ff00;
 }
 
 #output {
   white-space: pre-wrap;
-  word-wrap: break-word;
 }
 
-/* Input line */
 #inputLine {
   display: flex;
-  align-items: center;
   gap: 8px;
   margin-top: 10px;
 }
@@ -28,27 +19,12 @@ body {
   font-weight: bold;
 }
 
-/* Mobile + Desktop safe input */
-#mobileInput {
+#commandInput {
   background: black;
   color: #00ff00;
-
   border: none;
   outline: none;
-
   font-family: monospace;
   font-size: 18px;
-
   width: 100%;
-}
-
-/* Cursor blink */
-.cursor {
-  animation: blink 1s step-start infinite;
-}
-
-@keyframes blink {
-  50% {
-    opacity: 0;
-  }
 }
