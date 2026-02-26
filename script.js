@@ -160,21 +160,18 @@ Press ESC to return
 `;
   }
 
-  input.value = ""; // clear after each key
+  input.value = "";
 });
 
-
 bootSequence();
-
-const input = document.getElementById("mobileInput");
 
 function focusInput() {
   input.focus();
 }
 
-document.addEventListener("click", focusInput);
-document.getElementById("terminal").addEventListener("click", function () {
+document.getElementById("terminal").addEventListener("click", focusInput);
   input.focus();
 });
+
 
 
