@@ -1,0 +1,34 @@
+body { background-color: black; color: #00ff00; font-family: 'Courier New', monospace; margin: 0; padding: 20px; } #terminal { white-space: pre-wrap; } Optional glow effect: #terminal { text-shadow: 0 0 5px #00ff00; }
+body {
+  background-color: black;
+  color: #00ff00;
+  font-family: monospace;
+}
+
+.cursor {
+  display: inline-block;
+  width: 10px;
+  height: 18px;
+  background-color: #00ff00;
+  margin-left: 5px;
+  animation: blink 1s step-start infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+#output {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+#mobileInput {
+  position: absolute;
+  opacity: 0;
+  height: 0;
+  width: 0;
+  border: none;
+}
