@@ -13,7 +13,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let isTyping = false;
 
   function typeText(text, speed = 8) {
-    if (typingTimeout) clearTimeout(typingTimeout);
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+      isTyping = false;
+    }
 
     isTyping = true;
     output.textContent = "";
@@ -38,62 +41,63 @@ document.addEventListener("DOMContentLoaded", () => {
   let commandHistory = [];
   let historyIndex = -1;
 
-input.addEventListener("keydown", e => {
+  input.addEventListener("keydown", e => {
 
-  // ENTER (run command)
-  if (e.key === "Enter") {
-    e.preventDefault();
+    // ENTER (run command)
+    if (e.key === "Enter") {
+      e.preventDefault();
 
-    const cmd = input.value.trim();
-    if (cmd) {
-      commandHistory.push(cmd);
-      historyIndex = commandHistory.length;
-    }
+      const cmd = input.value.trim();
+      if (cmd) {
+        commandHistory.push(cmd);
+        historyIndex = commandHistory.length;
+      }
 
-    runCommand(cmd);
-    input.value = "";
-  }
-
-  // ESC = go back to main menu
-document.addEventListener("keydown", e => {
-
-  if (e.key === "Escape") {
-    e.preventDefault();
-
-    // Cancel typing
-    if (typingTimeout) {
-      clearTimeout(typingTimeout);
-      isTyping = false;
-    }
-
-    input.value = "";
-    showMenu();
-    input.focus(); // ensure cursor comes back
-  }
-
-});
-
-  // UP ARROW
-  if (e.key === "ArrowUp") {
-    e.preventDefault();
-    if (historyIndex > 0) {
-      historyIndex--;
-      input.value = commandHistory[historyIndex];
-    }
-  }
-
-  // DOWN ARROW
-  if (e.key === "ArrowDown") {
-    e.preventDefault();
-    if (historyIndex < commandHistory.length - 1) {
-      historyIndex++;
-      input.value = commandHistory[historyIndex];
-    } else {
+      runCommand(cmd);
       input.value = "";
     }
-  }
 
-});
+    // UP ARROW
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (historyIndex > 0) {
+        historyIndex--;
+        input.value = commandHistory[historyIndex];
+      }
+    }
+
+    // DOWN ARROW
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (historyIndex < commandHistory.length - 1) {
+        historyIndex++;
+        input.value = commandHistory[historyIndex];
+      } else {
+        input.value = "";
+      }
+    }
+
+  });
+
+  // =========================
+  // GLOBAL ESC KEY (FIXED)
+  // =========================
+  document.addEventListener("keydown", e => {
+
+    if (e.key === "Escape") {
+      e.preventDefault();
+
+      if (typingTimeout) {
+        clearTimeout(typingTimeout);
+        isTyping = false;
+      }
+
+      input.value = "";
+      showMenu();
+      input.focus();
+    }
+
+  });
 
   // =========================
   // BOOT SEQUENCE
@@ -167,7 +171,10 @@ Type 'help' to return
   // LOAD ESSAY
   // =========================
   function loadEssay(subject, essayName) {
-    if (typingTimeout) clearTimeout(typingTimeout);
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+      isTyping = false;
+    }
 
     output.textContent = "Loading...\n";
 
