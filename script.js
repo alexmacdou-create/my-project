@@ -1,21 +1,23 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  const terminal = document.getElementById("terminal");
   const output = document.getElementById("output");
+  const terminal = document.getElementById("terminal");
   const input = document.getElementById("commandInput");
 
   let essays = {};
   let currentSubject = null;
 
   // =========================
-  // TYPING SYSTEM
+  // TYPING SYSTEM (UPGRADED)
   // =========================
   let typingTimeout = null;
   let isTyping = false;
   let fullText = "";
 
   function typeText(text, speed = 10) {
-    if (typingTimeout) clearTimeout(typingTimeout);
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+    }
 
     isTyping = true;
     fullText = text;
@@ -51,6 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function attachInputListener(el) {
     el.addEventListener("keydown", e => {
+      // If typing → skip instead of processing input
       if (isTyping) {
         e.preventDefault();
         skipTyping();
@@ -69,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
         el.value = "";
       }
 
-      // UP / DOWN arrows
+      // UP ARROW
       if (e.key === "ArrowUp") {
         e.preventDefault();
         if (historyIndex > 0) {
@@ -77,6 +80,8 @@ document.addEventListener("DOMContentLoaded", () => {
           el.value = commandHistory[historyIndex];
         }
       }
+
+      // DOWN ARROW
       if (e.key === "ArrowDown") {
         e.preventDefault();
         if (historyIndex < commandHistory.length - 1) {
@@ -176,7 +181,7 @@ Type 'help' to return
   }
 
   // =========================
-  // LOAD ESSAY (WITH TYPING)
+  // LOAD ESSAY (WITH TOP AND BOTTOM INPUT)
   // =========================
   function loadEssay(subject, essayName) {
     if (typingTimeout) {
@@ -192,14 +197,53 @@ Type 'help' to return
         return res.text();
       })
       .then(text => {
-        // Top input stays; create bottom input if needed
-        ensureBottomInput();
 
-        // Fast typing for essays
+        // Remove old top/bottom inputs if present
+        const oldTop = document.getElementById("essayTopInput");
+        const oldBottom = document.getElementById("essayBottomInput");
+        if (oldTop) oldTop.remove();
+        if (oldBottom) oldBottom.remove();
+
+        // --- Top input ---
+        const topLine = document.createElement("div");
+        topLine.className = "inputLine";
+        topLine.id = "essayTopInput";
+        const topPrompt = document.createElement("span");
+        topPrompt.className = "prompt";
+        topPrompt.textContent = ">";
+        const topInput = document.createElement("input");
+        topInput.type = "text";
+        topInput.placeholder = "Type command + ENTER";
+        topInput.id = "topCommandInput";
+        topInput.autocomplete = "off";
+        topLine.appendChild(topPrompt);
+        topLine.appendChild(topInput);
+        terminal.insertBefore(topLine, output);
+        attachInputListener(topInput);
+
+        // --- Essay text ---
         typeText("Type back to return.\n\n" + text + "\n\nType back to return", 0.125);
 
-        // Scroll top input into view
-        input.scrollIntoView({ behavior: "smooth" });
+        // --- Bottom input ---
+        const bottomLine = document.createElement("div");
+        bottomLine.className = "inputLine";
+        bottomLine.id = "essayBottomInput";
+        const bottomPrompt = document.createElement("span");
+        bottomPrompt.className = "prompt";
+        bottomPrompt.textContent = ">";
+        const bottomInput = document.createElement("input");
+        bottomInput.type = "text";
+        bottomInput.placeholder = "Type command + ENTER";
+        bottomInput.id = "bottomCommandInput";
+        bottomInput.autocomplete = "off";
+        bottomLine.appendChild(bottomPrompt);
+        bottomLine.appendChild(bottomInput);
+        terminal.appendChild(bottomLine);
+        attachInputListener(bottomInput);
+
+        topInput.scrollIntoView({ behavior: "smooth" });
+        topInput.focus();
+
       })
       .catch(() => {
         typeText(`Error: file not found\n\nType help`);
@@ -207,25 +251,11 @@ Type 'help' to return
   }
 
   // =========================
-  // DUPLICATE INPUT AT BOTTOM
-  // =========================
-  function ensureBottomInput() {
-    if (!document.getElementById("bottomCommandInput")) {
-      const bottomLine = input.parentElement.cloneNode(true);
-      bottomLine.id = "bottomInputLine";
-      const bottomInput = bottomLine.querySelector("input");
-      bottomInput.id = "bottomCommandInput";
-      bottomInput.placeholder = "Type command + ENTER";
-      attachInputListener(bottomInput);
-      terminal.appendChild(bottomLine);
-    }
-  }
-
-  // =========================
   // COMMAND HANDLER
   // =========================
   function runCommand(cmd) {
     if (!cmd) return;
+
     cmd = cmd.toLowerCase().trim();
 
     if (isTyping && typingTimeout) {
@@ -238,17 +268,22 @@ Type 'help' to return
       return;
     }
 
+    if (cmd === "back") {
+      showMenu();
+      return;
+    }
+
+    // Inside subject
     if (currentSubject) {
       if (essays[currentSubject].includes(cmd)) {
         loadEssay(currentSubject, cmd);
-      } else if (cmd === "back") {
-        showMenu();
       } else {
         typeText(`Invalid entry\n\nType help`);
       }
       return;
     }
 
+    // Main menu
     if (essays.hasOwnProperty(cmd)) {
       showSubjectMenu(cmd);
     } else {
@@ -259,19 +294,20 @@ Type 'help' to return
   input.focus();
 
   // =========================
-  // MOBILE BACK BUTTON
+  // Mobile scroll/tap safety
   // =========================
+  function mobileBackHandler(e) {
+    if (e.target.tagName === "INPUT") return;
+    if (isTyping) {
+      skipTyping();
+      return;
+    }
+    showMenu();
+    input.focus();
+  }
+
   if (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-    window.addEventListener("popstate", e => {
-      if (isTyping) {
-        skipTyping();
-      } else {
-        showMenu();
-        input.focus();
-      }
-      history.pushState(null, "", location.href);
-    });
-    history.pushState(null, "", location.href);
+    document.addEventListener("touchstart", mobileBackHandler, { passive: true });
   }
 
 });
