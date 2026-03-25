@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function typeText(text, speed = 10) {
     if (typingTimeout) clearTimeout(typingTimeout);
-
     isTyping = true;
     fullText = text;
     output.textContent = "";
@@ -50,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   input.addEventListener("keydown", e => {
 
-    // Skip typing if in progress
+    // If typing → skip instead of processing input
     if (isTyping) {
       e.preventDefault();
       skipTyping();
@@ -69,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
       input.value = "";
     }
 
-    // UP/DOWN arrow
+    // UP ARROW
     if (e.key === "ArrowUp") {
       e.preventDefault();
       if (historyIndex > 0) {
@@ -77,6 +76,8 @@ document.addEventListener("DOMContentLoaded", () => {
         input.value = commandHistory[historyIndex];
       }
     }
+
+    // DOWN ARROW
     if (e.key === "ArrowDown") {
       e.preventDefault();
       if (historyIndex < commandHistory.length - 1) {
@@ -89,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // =========================
-  // ESC KEY (desktop)
+  // GLOBAL ESC KEY
   // =========================
   document.addEventListener("keydown", e => {
     if (e.key === "Escape") {
@@ -120,11 +121,11 @@ Welcome, user.
 
 `;
     typeText(bootText, 20);
-    setTimeout(showMenu, 3000);
+    setTimeout(() => showMenu(), 3000);
   }
 
   // =========================
-  // LOAD ESSAYS INDEX
+  // LOAD JSON INDEX
   // =========================
   fetch("essays/index.json")
     .then(res => res.json())
@@ -171,16 +172,15 @@ Type 'help' to return
   // =========================
   function loadEssay(subject, essayName) {
     if (typingTimeout) clearTimeout(typingTimeout);
-
+    isTyping = false;
     output.textContent = "Loading...\n";
-
     fetch(`essays/${subject}/${essayName}.txt`)
       .then(res => {
         if (!res.ok) throw new Error();
         return res.text();
       })
       .then(text => {
-        typeText(text + "\n\nType help to return", 0.125); // super fast typing
+        typeText(text + "\n\nType help to return", 0.125);
       })
       .catch(() => {
         typeText(`Error: file not found\n\nType help`);
@@ -217,22 +217,36 @@ Type 'help' to return
     }
   }
 
+  input.focus();
+
   // =========================
-  // MOBILE BACK/TAP SUPPORT
+  // MOBILE BACK BUTTON & TOUCH HANDLER
   // =========================
-  function mobileBackHandler(e) {
-    if (e.target === input) return;
+  // Fake history state to make Android back button go "home"
+  history.pushState(null, "", location.href);
+
+  window.addEventListener("popstate", () => {
     if (isTyping) {
       skipTyping();
+      history.pushState(null, "", location.href);
       return;
     }
     showMenu();
     input.focus();
-  }
+    history.pushState(null, "", location.href);
+  });
 
+  // Touch anywhere outside input → back
   if (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-    document.addEventListener("touchstart", mobileBackHandler, { passive: true });
+    document.addEventListener("touchstart", e => {
+      if (e.target === input) return;
+      if (isTyping) {
+        skipTyping();
+      } else {
+        showMenu();
+      }
+      input.focus();
+    }, { passive: true });
   }
 
-  input.focus();
 });
