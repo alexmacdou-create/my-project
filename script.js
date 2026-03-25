@@ -275,17 +275,23 @@ Type 'help' to return
 
 });
 
-// Mobile touch = back / ESC
-document.addEventListener("touchstart", (e) => {
-
-  // Ignore touches on the input
+// Mobile-only back/tap handler
+function mobileBackHandler(e) {
+  // Ignore taps on the input
   if (e.target === input) return;
 
+  // If typing, finish text
   if (isTyping) {
     skipTyping();
-  } else {
-    showMenu();
-    input.focus();
+    return;
   }
 
-});
+  // Otherwise go home
+  showMenu();
+  input.focus();
+}
+
+// Only attach on mobile devices
+if (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+  document.addEventListener("touchstart", mobileBackHandler, { passive: true });
+}
