@@ -43,25 +43,22 @@ document.addEventListener("DOMContentLoaded", () => {
       isTyping = false;
     }
   }
- // Push a fake state so back button doesn't exit immediately
-history.pushState(null, "", location.href);
+// Push initial states (important for Android)
+history.pushState({ page: 1 }, "", "");
+history.pushState({ page: 2 }, "", "");
 
 // Handle back button
 window.addEventListener("popstate", () => {
 
-  // If typing, finish it
   if (isTyping) {
     skipTyping();
-    history.pushState(null, "", location.href);
-    return;
+  } else {
+    showMenu();
+    input.focus();
   }
 
-  // Otherwise go to main menu
-  showMenu();
-  input.focus();
-
-  // Re-add state so back button keeps working
-  history.pushState(null, "", location.href);
+  // Re-push state so back button keeps working
+  history.pushState({ page: 2 }, "", "");
 });
   
   // =========================
