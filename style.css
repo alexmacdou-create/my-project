@@ -7,6 +7,7 @@ body {
   font-family: monospace;
   padding: 20px;
   margin: 0;
+  box-sizing: border-box;
 }
 
 /* =========================
@@ -14,8 +15,8 @@ body {
 ========================= */
 #terminal {
   max-width: 800px;
-  margin: 0 auto;
   width: 100%;
+  margin: 0 auto;
 }
 
 /* =========================
@@ -23,7 +24,7 @@ body {
 ========================= */
 #output {
   white-space: pre-wrap;
-  overflow-wrap: break-word;  /* Firefox fix */
+  overflow-wrap: break-word;
   word-break: break-word;
   margin-bottom: 10px;
 }
@@ -35,18 +36,18 @@ body {
 }
 
 @keyframes blink {
-  0%, 50%, 100% { opacity: 1; }
-  25%, 75% { opacity: 0; }
+  0%,50%,100% { opacity: 1; }
+  25%,75% { opacity: 0; }
 }
 
 /* =========================
-   INPUT LINE (shared top & bottom)
+   INPUT LINE (top & bottom)
 ========================= */
 .inputLine {
   display: flex;
   gap: 8px;
-  margin: 10px 0; /* space above and below inputs */
-  align-items: center; /* align prompt and input vertically */
+  margin: 10px 0;
+  align-items: center;
 }
 
 /* =========================
@@ -67,7 +68,7 @@ input.commandInput {
   font-family: monospace;
   font-size: 18px;
   width: 100%;
-  padding: 2px 4px;   /* match previous bottom input spacing */
+  padding: 0;
   margin: 0;
   box-sizing: border-box;
 }
@@ -76,4 +77,9 @@ input.commandInput {
 input.commandInput::placeholder {
   color: #00ff00;
   opacity: 0.5;
+}
+
+/* Essay text */
+.essayText {
+  margin: 10px 0;
 }
