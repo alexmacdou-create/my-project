@@ -45,9 +45,9 @@ body {
 ========================= */
 .inputLine {
   display: flex;
+  align-items: center; /* aligns prompt and input vertically */
   gap: 8px;
   margin: 10px 0;
-  align-items: center;
 }
 
 /* =========================
@@ -55,14 +55,15 @@ body {
 ========================= */
 .prompt {
   font-weight: bold;
+  color: #00ff00;
 }
 
 /* =========================
-   ALL INPUTS
+   ALL INPUTS (top & bottom)
 ========================= */
 input.commandInput {
-  background: black;
-  color: #00ff00;
+  background-color: black !important;
+  color: #00ff00 !important;
   border: none;
   outline: none;
   font-family: monospace;
@@ -79,7 +80,9 @@ input.commandInput::placeholder {
   opacity: 0.5;
 }
 
-/* Essay text */
+/* =========================
+   ESSAY TEXT
+========================= */
 .essayText {
   margin: 10px 0;
 }
