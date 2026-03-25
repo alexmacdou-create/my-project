@@ -7,16 +7,14 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentSubject = null;
 
   // =========================
-  // TYPING SYSTEM (UPGRADED)
+  // TYPING SYSTEM
   // =========================
   let typingTimeout = null;
   let isTyping = false;
   let fullText = "";
 
   function typeText(text, speed = 10) {
-    if (typingTimeout) {
-      clearTimeout(typingTimeout);
-    }
+    if (typingTimeout) clearTimeout(typingTimeout);
 
     isTyping = true;
     fullText = text;
@@ -43,27 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
       isTyping = false;
     }
   }
-// Force a hash so back button has something real to change
-if (!location.hash) {
-  location.hash = "#home";
-}
 
-// Handle back button
-window.addEventListener("hashchange", () => {
-
-  if (isTyping) {
-    skipTyping();
-  } else {
-    showMenu();
-    input.focus();
-  }
-
-  // Reset hash so it can trigger again next time
-  setTimeout(() => {
-    location.hash = "#home";
-  }, 0);
-});
-  
   // =========================
   // COMMAND HISTORY
   // =========================
@@ -72,7 +50,7 @@ window.addEventListener("hashchange", () => {
 
   input.addEventListener("keydown", e => {
 
-    // If typing → skip instead of processing input
+    // Skip typing if in progress
     if (isTyping) {
       e.preventDefault();
       skipTyping();
@@ -82,18 +60,16 @@ window.addEventListener("hashchange", () => {
     // ENTER
     if (e.key === "Enter") {
       e.preventDefault();
-
       const cmd = input.value.trim();
       if (cmd) {
         commandHistory.push(cmd);
         historyIndex = commandHistory.length;
       }
-
       runCommand(cmd);
       input.value = "";
     }
 
-    // UP ARROW
+    // UP/DOWN arrow
     if (e.key === "ArrowUp") {
       e.preventDefault();
       if (historyIndex > 0) {
@@ -101,8 +77,6 @@ window.addEventListener("hashchange", () => {
         input.value = commandHistory[historyIndex];
       }
     }
-
-    // DOWN ARROW
     if (e.key === "ArrowDown") {
       e.preventDefault();
       if (historyIndex < commandHistory.length - 1) {
@@ -112,34 +86,22 @@ window.addEventListener("hashchange", () => {
         input.value = "";
       }
     }
-
   });
 
   // =========================
-  // GLOBAL ESC KEY
+  // ESC KEY (desktop)
   // =========================
   document.addEventListener("keydown", e => {
-
     if (e.key === "Escape") {
       e.preventDefault();
-
-      // If typing → just finish text
       if (isTyping) {
         skipTyping();
         return;
       }
-
-      // Otherwise go home
-      if (typingTimeout) {
-        clearTimeout(typingTimeout);
-        isTyping = false;
-      }
-
       input.value = "";
       showMenu();
       input.focus();
     }
-
   });
 
   // =========================
@@ -157,16 +119,12 @@ Access granted.
 Welcome, user.
 
 `;
-
     typeText(bootText, 20);
-
-    setTimeout(() => {
-      showMenu();
-    }, 3000);
+    setTimeout(showMenu, 3000);
   }
 
   // =========================
-  // LOAD JSON INDEX
+  // LOAD ESSAYS INDEX
   // =========================
   fetch("essays/index.json")
     .then(res => res.json())
@@ -183,7 +141,6 @@ Welcome, user.
   // =========================
   function showMenu() {
     currentSubject = null;
-
     typeText(`
 PORTFOLIO TERMINAL
 
@@ -198,7 +155,6 @@ help
   function showSubjectMenu(subject) {
     currentSubject = subject;
     const list = essays[subject].join("\n- ");
-
     typeText(`
 ${subject.toUpperCase()} ESSAYS
 
@@ -211,13 +167,10 @@ Type 'help' to return
   }
 
   // =========================
-  // LOAD ESSAY (WITH TYPING)
+  // LOAD ESSAY
   // =========================
   function loadEssay(subject, essayName) {
-    if (typingTimeout) {
-      clearTimeout(typingTimeout);
-      isTyping = false;
-    }
+    if (typingTimeout) clearTimeout(typingTimeout);
 
     output.textContent = "Loading...\n";
 
@@ -227,8 +180,7 @@ Type 'help' to return
         return res.text();
       })
       .then(text => {
-        // faster typing for essays
-        typeText(text + "\n\nType help to return", 0.125);
+        typeText(text + "\n\nType help to return", 0.125); // super fast typing
       })
       .catch(() => {
         typeText(`Error: file not found\n\nType help`);
@@ -240,20 +192,15 @@ Type 'help' to return
   // =========================
   function runCommand(cmd) {
     if (!cmd) return;
-
     cmd = cmd.toLowerCase().trim();
 
-    if (isTyping && typingTimeout) {
-      clearTimeout(typingTimeout);
-      isTyping = false;
-    }
+    if (isTyping) skipTyping();
 
     if (cmd === "help") {
       showMenu();
       return;
     }
 
-    // Inside subject
     if (currentSubject) {
       if (essays[currentSubject].includes(cmd)) {
         loadEssay(currentSubject, cmd);
@@ -263,7 +210,6 @@ Type 'help' to return
       return;
     }
 
-    // Main menu
     if (essays.hasOwnProperty(cmd)) {
       showSubjectMenu(cmd);
     } else {
@@ -271,27 +217,22 @@ Type 'help' to return
     }
   }
 
-  input.focus();
-
-});
-
-// Mobile-only back/tap handler
-function mobileBackHandler(e) {
-  // Ignore taps on the input
-  if (e.target === input) return;
-
-  // If typing, finish text
-  if (isTyping) {
-    skipTyping();
-    return;
+  // =========================
+  // MOBILE BACK/TAP SUPPORT
+  // =========================
+  function mobileBackHandler(e) {
+    if (e.target === input) return;
+    if (isTyping) {
+      skipTyping();
+      return;
+    }
+    showMenu();
+    input.focus();
   }
 
-  // Otherwise go home
-  showMenu();
-  input.focus();
-}
+  if (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    document.addEventListener("touchstart", mobileBackHandler, { passive: true });
+  }
 
-// Only attach on mobile devices
-if (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-  document.addEventListener("touchstart", mobileBackHandler, { passive: true });
-}
+  input.focus();
+});
