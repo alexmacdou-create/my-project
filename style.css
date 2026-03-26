@@ -17,28 +17,22 @@ body {
   width: 100%;
 }
 
+
 /* =========================
    OUTPUT AREA
 ========================= */
-#output pre {
-  white-space: pre-wrap;     /* keeps formatting BUT allows wrapping */
-  overflow-wrap: break-word; /* forces long lines to wrap */
-  word-break: break-word;
-}
-
-#output pre {
-  white-space: pre-wrap;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-}
-
 #output {
   white-space: pre-wrap;
-  overflow-wrap: break-word;  /* important for Firefox */
-  word-break: break-word;
-  margin-bottom: 10px;        /* space between output and bottom input */
+  margin-bottom: 10px;
 }
 
+/* FIXED: consistent cross-browser wrapping */
+#output pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;   /* 🔥 key Firefox fix */
+  word-break: break-word;
+  margin: 10px 0;
+}
 
 /* blinking cursor for output only */
 #output::after {
