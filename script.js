@@ -37,19 +37,24 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!cmd) return;
     cmd = cmd.toLowerCase().trim();
 
-    if (cmd === "back") {
-      showMenu();
-      return;
-    }
-
     if (currentSubject !== null) {
-      if (essays[currentSubject].includes(cmd)) {
-        loadEssay(currentSubject, cmd);
-      } else {
-        typeText(`Unknown command\n\nType 'back'`);
-      }
-      return;
-    }
+  if (cmd === "back") {
+    showMenu();
+    return;
+  }
+
+  if (essays[currentSubject].includes(cmd)) {
+    loadEssay(currentSubject, cmd);
+  } else {
+    typeText(`Unknown command\n\nType 'back'`);
+  }
+  return;
+}
+
+if (cmd === "back") {
+  showMenu();
+  return;
+}
 
     if (essays.hasOwnProperty(cmd)) {
       showSubjectMenu(cmd);
