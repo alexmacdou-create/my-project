@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const output = document.getElementById("output");
+  const menuInput = document.getElementById("commandInput");
 
   let essays = {};
   let currentSubject = null;
@@ -9,16 +10,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // =========================
   // TYPING SYSTEM
   // =========================
-  function typeText(text, speed = 10, targetElement = output) {
+  function typeText(text, speed = 10) {
     if (typingTimeout) clearTimeout(typingTimeout);
 
     isTyping = true;
-    targetElement.textContent = "";
+    output.textContent = "";
     let i = 0;
 
     function type() {
       if (i < text.length) {
-        targetElement.textContent += text.charAt(i);
+        output.textContent += text.charAt(i);
         i++;
         typingTimeout = setTimeout(type, speed);
       } else {
@@ -37,23 +38,23 @@ document.addEventListener("DOMContentLoaded", () => {
     cmd = cmd.toLowerCase().trim();
 
     if (currentSubject !== null) {
-      if (cmd === "back") {
-        showMenu();
-        return;
-      }
+  if (cmd === "back") {
+    showMenu();
+    return;
+  }
 
-      if (essays[currentSubject].includes(cmd)) {
-        loadEssay(currentSubject, cmd);
-      } else {
-        typeText(`Unknown command\n\nType 'back'`);
-      }
-      return;
-    }
+  if (essays[currentSubject].includes(cmd)) {
+    loadEssay(currentSubject, cmd);
+  } else {
+    typeText(`Unknown command\n\nType 'back'`);
+  }
+  return;
+}
 
-    if (cmd === "back") {
-      showMenu();
-      return;
-    }
+if (cmd === "back") {
+  showMenu();
+  return;
+}
 
     if (essays.hasOwnProperty(cmd)) {
       showSubjectMenu(cmd);
@@ -85,14 +86,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =========================
-  // DISPLAY ESSAY
+  // DISPLAY ESSAY (FIXED TYPING)
   // =========================
   function displayEssay(text) {
     output.innerHTML = "";
 
+    // Top input
     const inputLine = createEssayInput();
     output.appendChild(inputLine);
 
+    // Essay container
     const essayText = document.createElement("pre");
     output.appendChild(essayText);
 
@@ -103,14 +106,16 @@ document.addEventListener("DOMContentLoaded", () => {
       if (i < text.length) {
         essayText.textContent += text.charAt(i);
         i++;
-        typingTimeout = setTimeout(type, 1);
+        typingTimeout = setTimeout(type, 1); // adjust speed if needed
       } else {
         isTyping = false;
       }
     }
 
+    // ✅ Start typing AFTER render
     setTimeout(type, 0);
 
+    // ✅ Focus AFTER typing has begun (prevents animation break)
     setTimeout(() => {
       inputLine.querySelector("input").focus();
     }, 50);
@@ -149,14 +154,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function showMenu() {
     currentSubject = null;
 
-    output.innerHTML = "";
-
-    const inputLine = createEssayInput();
-    output.appendChild(inputLine);
-
-    const textBlock = document.createElement("pre");
-    output.appendChild(textBlock);
-
     typeText(`
 PORTFOLIO TERMINAL
 
@@ -165,25 +162,14 @@ Commands:
 ${Object.keys(essays).join("\n")}
 
 Type 'back' anytime to return here
-`, 10, textBlock);
-
-    setTimeout(() => {
-      inputLine.querySelector("input").focus();
-    }, 50);
+`);
+    // menuInput.focus();
   }
 
   function showSubjectMenu(subject) {
     currentSubject = subject;
 
     const list = essays[subject].join("\n- ");
-
-    output.innerHTML = "";
-
-    const inputLine = createEssayInput();
-    output.appendChild(inputLine);
-
-    const textBlock = document.createElement("pre");
-    output.appendChild(textBlock);
 
     typeText(`
 ${subject.toUpperCase()} ESSAYS
@@ -193,11 +179,7 @@ Type one of the following:
 - ${list}
 
 Type 'back' to return
-`, 10, textBlock);
-
-    setTimeout(() => {
-      inputLine.querySelector("input").focus();
-    }, 50);
+`);
   }
 
   // =========================
@@ -214,14 +196,7 @@ Access granted.
 
 Welcome, user.
 `;
-
-    output.innerHTML = "";
-
-    const textBlock = document.createElement("pre");
-    output.appendChild(textBlock);
-
-    typeText(bootText, 20, textBlock);
-
+    typeText(bootText, 20);
     setTimeout(() => showMenu(), 3000);
   }
 
@@ -245,6 +220,20 @@ Welcome, user.
     if (e.key === "Escape") {
       e.preventDefault();
       showMenu();
+      menuInput.focus();
     }
   });
+
+  // =========================
+  // MENU INPUT
+  // =========================
+  menuInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      runCommand(menuInput.value);
+      menuInput.value = "";
+    }
+  });
+
+  menuInput.focus();
 });
